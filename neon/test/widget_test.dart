@@ -1,25 +1,100 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:neon/main.dart';
+import 'package:neon/feature/age_estimation/bloc/age_estimation_bloc.dart';
 
 void main() {
-  group(CounterBloc, () {
-  late CounterBloc counterBloc;
+  group('AgeEstimationBloc', () {
+    late AgeEstimationBloc ageEstimationBloc;
 
-  setUp(() {
-    counterBloc = CounterBloc();
-  });
+    setUp(() {
+      ageEstimationBloc = AgeEstimationBloc();
+    });
 
-  test('initial state is 0', () {
-    expect(counterBloc.state, equals(0));
+    test('initial state is AgeEstimationInitial', () {
+      expect(ageEstimationBloc.state, isA<AgeEstimationInitial>());
+    });
+
+    test('age estimation is shown when name is entered and button is pressed',
+        () {
+      final name = 'John Doe';
+      ageEstimationBloc.add(NameEntered(name));
+      ageEstimationBloc.add(EstimateAge());
+
+      expectLater(
+        ageEstimationBloc.stream,
+        emitsInOrder([
+          isA<AgeEstimationLoading>(),
+          isA<AgeEstimationLoaded>()
+              .having((state) => state.age, 'age', isNonZero),
+        ]),
+      );
+    });
+
+    test('age estimation fails when name is empty', () {
+      final name = '';
+      ageEstimationBloc.add(NameEntered(name));
+      ageEstimationBloc.add(EstimateAge());
+
+      expectLater(
+        ageEstimationBloc.stream,
+        emitsInOrder([
+          isA<AgeEstimationLoading>(),
+          isA<AgeEstimationError>(),
+        ]),
+      );
+    });
+
+    test('age estimation fails when name contains numbers', () {
+      final name = 'John123';
+      ageEstimationBloc.add(NameEntered(name));
+      ageEstimationBloc.add(EstimateAge());
+
+      expectLater(
+        ageEstimationBloc.stream,
+        emitsInOrder([
+          isA<AgeEstimationLoading>(),
+          isA<AgeEstimationError>(),
+        ]),
+      );
+    });
+
+    test('age estimation fails when name contains special characters', () {
+      final name = 'John@Doe';
+      ageEstimationBloc.add(NameEntered(name));
+      ageEstimationBloc.add(EstimateAge());
+
+      expectLater(
+        ageEstimationBloc.stream,
+        emitsInOrder([
+          isA<AgeEstimationLoading>(),
+          isA<AgeEstimationError>(),
+        ]),
+      );
+    });
+
+    test('age estimation succeeds with a valid name', () {
+      final name = 'Jane Doe';
+      ageEstimationBloc.add(NameEntered(name));
+      ageEstimationBloc.add(EstimateAge());
+
+      expectLater(
+        ageEstimationBloc.stream,
+        emitsInOrder([
+          isA<AgeEstimationLoading>(),
+          isA<AgeEstimationLoaded>()
+              .having((state) => state.age, 'age', isNonZero),
+        ]),
+      );
+    });
+
+    test('age estimation resets when reset event is added', () {
+      ageEstimationBloc.add(ResetAgeEstimation());
+
+      expectLater(
+        ageEstimationBloc.stream,
+        emitsInOrder([
+          isA<AgeEstimationInitial>(),
+        ]),
+      );
+    });
   });
-});
 }
