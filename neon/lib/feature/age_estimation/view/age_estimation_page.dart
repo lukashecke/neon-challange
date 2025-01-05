@@ -3,21 +3,35 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neon/feature/age_estimation/bloc/age_estimation_bloc.dart';
 
 /// Initial page of the application.
-class AgeEstimationPage extends StatelessWidget {
+class AgeEstimationPage extends StatefulWidget {
   /// This is the main page constructor.
-  AgeEstimationPage({required this.title, super.key});
+  const AgeEstimationPage({required this.title, super.key});
 
   /// The title of the page.
   final String title;
 
+  @override
+  State<AgeEstimationPage> createState() => _AgeEstimationPageState();
+}
+
+class _AgeEstimationPageState extends State<AgeEstimationPage> {
   final TextEditingController _controller = TextEditingController();
+  final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      _isButtonEnabled.value = _controller.text.isNotEmpty;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
+        title: Text(widget.title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8),
@@ -65,14 +79,21 @@ class AgeEstimationPage extends StatelessWidget {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_controller.text.isEmpty) {
-            return;
-          }
-          context.read<AgeEstimationBloc>().add(NameEntered(_controller.text));
+      floatingActionButton: ValueListenableBuilder<bool>(
+        valueListenable: _isButtonEnabled,
+        builder: (context, isEnabled, child) {
+          return FloatingActionButton(
+            backgroundColor: isEnabled ? null : Colors.grey,
+            onPressed: isEnabled
+                ? () {
+                    context
+                        .read<AgeEstimationBloc>()
+                        .add(NameEntered(_controller.text));
+                  }
+                : null,
+            child: const Icon(Icons.search),
+          );
         },
-        child: const Icon(Icons.search),
       ),
     );
   }
