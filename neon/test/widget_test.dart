@@ -67,11 +67,6 @@ void main() {
     testWidgets('Button does nothing initially', (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
-      final buttonFinder = find.widgetWithIcon(
-        FloatingActionButton,
-        Icons.search,
-      );
-
       expect(
         tester.widget<FloatingActionButton>(buttonFinder).onPressed,
         isNull,
@@ -82,16 +77,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
-      // Verify that the button is initially disabled
-      final textFieldFinder = find.byType(TextField);
-      final buttonFinder = find.widgetWithIcon(
-        FloatingActionButton,
-        Icons.search,
-      );
-
-      await tester.enterText(textFieldFinder, 'Test');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
+      await _enterTextToTextField(tester, 'Test');
 
       expect(
         tester.widget<FloatingActionButton>(buttonFinder).onPressed,
@@ -102,24 +88,14 @@ void main() {
     testWidgets('Button deactivates after search', (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
-      // Verify that the button is initially disabled
-      final textFieldFinder = find.byType(TextField);
-      final buttonFinder = find.widgetWithIcon(
-        FloatingActionButton,
-        Icons.search,
-      );
-
-      await tester.enterText(textFieldFinder, 'Test');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
+      await _enterTextToTextField(tester, 'Test');
 
       expect(
         tester.widget<FloatingActionButton>(buttonFinder).onPressed,
         isNotNull,
       );
 
-      await tester.tap(find.byIcon(Icons.search));
-      await tester.pump();
+      await _tapSearchButton(tester);
 
       expect(
         tester.widget<FloatingActionButton>(buttonFinder).onPressed,
@@ -131,28 +107,16 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
-      // Verify that the button is initially disabled
-      final textFieldFinder = find.byType(TextField);
-      final buttonFinder = find.widgetWithIcon(
-        FloatingActionButton,
-        Icons.search,
-      );
+      await _enterTextToTextField(tester, 'Test');
 
-      await tester.enterText(textFieldFinder, 'Test');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
-
-      await tester.tap(find.byIcon(Icons.search));
-      await tester.pump();
+      await _tapSearchButton(tester);
 
       expect(
         tester.widget<FloatingActionButton>(buttonFinder).onPressed,
         isNull,
       );
 
-      await tester.enterText(textFieldFinder, 'Test2');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
+      await _enterTextToTextField(tester, 'Test2');
 
       expect(
         tester.widget<FloatingActionButton>(buttonFinder).onPressed,
@@ -165,32 +129,18 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(const MyApp());
 
-      // Verify that the button is initially disabled
-      final textFieldFinder = find.byType(TextField);
-      final buttonFinder = find.widgetWithIcon(
-        FloatingActionButton,
-        Icons.search,
-      );
-
-      await tester.enterText(textFieldFinder, 'Test');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
+      await _enterTextToTextField(tester, 'Test');
 
       expect(
         tester.widget<FloatingActionButton>(buttonFinder).onPressed,
         isNotNull,
       );
 
-      await tester.tap(find.byIcon(Icons.search));
-      await tester.pump();
+      await _tapSearchButton(tester);
 
-      await tester.enterText(textFieldFinder, '');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
+      await _enterTextToTextField(tester, '');
 
-      await tester.enterText(textFieldFinder, 'Test');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
+      await _enterTextToTextField(tester, 'Test');
 
       expect(
         tester.widget<FloatingActionButton>(buttonFinder).onPressed,
@@ -198,4 +148,22 @@ void main() {
       );
     });
   });
+}
+
+final buttonFinder = find.widgetWithIcon(
+  FloatingActionButton,
+  Icons.search,
+);
+
+Future<void> _enterTextToTextField(WidgetTester tester, String text) async {
+  final textFieldFinder = find.byType(TextField);
+
+  await tester.enterText(textFieldFinder, text);
+  await tester.testTextInput.receiveAction(TextInputAction.done);
+  await tester.pump();
+}
+
+Future<void> _tapSearchButton(WidgetTester tester) async {
+  await tester.tap(find.byIcon(Icons.search));
+  await tester.pump();
 }
