@@ -17,12 +17,14 @@ class AgeEstimationPage extends StatefulWidget {
 class _AgeEstimationPageState extends State<AgeEstimationPage> {
   final TextEditingController _controller = TextEditingController();
   final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
+  String _lastEnteredName = '';
 
   @override
   void initState() {
     super.initState();
     _controller.addListener(() {
-      _isButtonEnabled.value = _controller.text.isNotEmpty;
+      _isButtonEnabled.value =
+          _controller.text.isNotEmpty && _controller.text != _lastEnteredName;
     });
   }
 
@@ -89,6 +91,10 @@ class _AgeEstimationPageState extends State<AgeEstimationPage> {
                     context
                         .read<AgeEstimationBloc>()
                         .add(NameEntered(_controller.text));
+                    _lastEnteredName = _controller.text;
+                    // disables the button immediately after it was pressed
+                    // otherwise a reffocus on the text field would be needed
+                    _isButtonEnabled.value = false;
                   }
                 : null,
             child: const Icon(Icons.search),
