@@ -14,7 +14,10 @@ final class AgeEstimationLoading extends AgeEstimationState {}
 /// The loaded state of the age estimation feature.
 final class AgeEstimationLoaded extends AgeEstimationState {
   /// This is the main loaded state constructor.
-  AgeEstimationLoaded(this.age);
+  AgeEstimationLoaded(this.age, this.name);
+
+  /// The name used for the estimation.
+  final String name;
 
   /// The estimated age of the name.
   final int age;

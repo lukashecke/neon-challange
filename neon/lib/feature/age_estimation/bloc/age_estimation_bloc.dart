@@ -22,7 +22,12 @@ class AgeEstimationBloc extends Bloc<AgeEstimationEvent, AgeEstimationState> {
 
       try {
         final ageEstimation = await _repository.fetchNameEstimation(event.name);
-        emit(AgeEstimationLoaded(ageEstimation.age ?? 0));
+        emit(
+          AgeEstimationLoaded(
+            ageEstimation.age ?? 0,
+            ageEstimation.name ?? '-',
+          ),
+        );
       } on Exception catch (error, stackTrace) {
         log(
           'Exception cought in AgeEstimationBloc.on<NameEntered>',

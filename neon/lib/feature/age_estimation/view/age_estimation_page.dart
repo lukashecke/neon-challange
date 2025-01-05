@@ -53,7 +53,8 @@ class _AgeEstimationPageState extends State<AgeEstimationPage> {
                           child: CircularProgressIndicator(),
                         ),
                       AgeEstimationLoaded() => Text(
-                          'Das Alter des Namens beträgt ${state.age} Jahre. 🥳',
+                          'Das Alter des Namens ${state.name} '
+                          'beträgt ${state.age} Jahre. 🥳',
                           style: const TextStyle(fontSize: 30),
                           textAlign: TextAlign.center,
                         ),
