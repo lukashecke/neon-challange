@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neon/feature/age_estimation/bloc/age_estimation_bloc.dart';
+import 'package:neon/feature/age_estimation/data/age_estimation_repository.dart';
 import 'package:neon/feature/age_estimation/view/age_estimation_page.dart';
 
 void main() {
@@ -20,9 +21,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: BlocProvider(
-        create: (context) => AgeEstimationBloc(),
-        child: const AgeEstimationPage(title: 'Estimate the Age of a Name'),
+      home: RepositoryProvider(
+        create: (context) => AgeEstimationRepository(),
+        child: BlocProvider(
+          create: (context) => AgeEstimationBloc(
+            repository: context.read<AgeEstimationRepository>(),
+          ),
+          child: AgeEstimationPage(title: 'Schätze das Alter eines Namens'),
+        ),
       ),
     );
   }

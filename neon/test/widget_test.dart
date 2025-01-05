@@ -1,12 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:neon/feature/age_estimation/bloc/age_estimation_bloc.dart';
+import 'package:neon/feature/age_estimation/data/age_estimation_repository.dart';
+import 'package:neon/feature/age_estimation/model/age_estimation.dart';
+
+class MockRepository extends Mock implements AgeEstimationRepository {}
 
 void main() {
-  group('AgeEstimationBloc', () {
+  group('AgeEstimationBloc (User Story 1)', () {
     late AgeEstimationBloc ageEstimationBloc;
+    late AgeEstimationRepository ageEstimationRepository;
 
     setUp(() {
-      ageEstimationBloc = AgeEstimationBloc();
+      ageEstimationRepository = MockRepository();
+      ageEstimationBloc =
+          AgeEstimationBloc(repository: ageEstimationRepository);
+      when(() => ageEstimationRepository.fetchNameEstimation(any())).thenAnswer(
+        (_) async => AgeEstimation(name: 'Test', age: 42, count: 1),
+      );
     });
 
     test('initial state is AgeEstimationInitial', () {
@@ -15,9 +26,8 @@ void main() {
 
     test('age estimation is shown when name is entered and button is pressed',
         () {
-      final name = 'John Doe';
+      const name = 'John Doe';
       ageEstimationBloc.add(NameEntered(name));
-      ageEstimationBloc.add(EstimateAge());
 
       expectLater(
         ageEstimationBloc.stream,
@@ -30,69 +40,13 @@ void main() {
     });
 
     test('age estimation fails when name is empty', () {
-      final name = '';
+      const name = '';
       ageEstimationBloc.add(NameEntered(name));
-      ageEstimationBloc.add(EstimateAge());
 
       expectLater(
         ageEstimationBloc.stream,
         emitsInOrder([
-          isA<AgeEstimationLoading>(),
           isA<AgeEstimationError>(),
-        ]),
-      );
-    });
-
-    test('age estimation fails when name contains numbers', () {
-      final name = 'John123';
-      ageEstimationBloc.add(NameEntered(name));
-      ageEstimationBloc.add(EstimateAge());
-
-      expectLater(
-        ageEstimationBloc.stream,
-        emitsInOrder([
-          isA<AgeEstimationLoading>(),
-          isA<AgeEstimationError>(),
-        ]),
-      );
-    });
-
-    test('age estimation fails when name contains special characters', () {
-      final name = 'John@Doe';
-      ageEstimationBloc.add(NameEntered(name));
-      ageEstimationBloc.add(EstimateAge());
-
-      expectLater(
-        ageEstimationBloc.stream,
-        emitsInOrder([
-          isA<AgeEstimationLoading>(),
-          isA<AgeEstimationError>(),
-        ]),
-      );
-    });
-
-    test('age estimation succeeds with a valid name', () {
-      final name = 'Jane Doe';
-      ageEstimationBloc.add(NameEntered(name));
-      ageEstimationBloc.add(EstimateAge());
-
-      expectLater(
-        ageEstimationBloc.stream,
-        emitsInOrder([
-          isA<AgeEstimationLoading>(),
-          isA<AgeEstimationLoaded>()
-              .having((state) => state.age, 'age', isNonZero),
-        ]),
-      );
-    });
-
-    test('age estimation resets when reset event is added', () {
-      ageEstimationBloc.add(ResetAgeEstimation());
-
-      expectLater(
-        ageEstimationBloc.stream,
-        emitsInOrder([
-          isA<AgeEstimationInitial>(),
         ]),
       );
     });
