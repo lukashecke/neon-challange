@@ -11,12 +11,15 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter:
     sdk: flutter
+  flutter_bloc: ^8.1.6
   very_good_analysis: ^7.0.0
 
 dev_dependencies:
+  bloc_test: ^9.1.7
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
+  test: ^1.25.7
 
 # The following section is specific to Flutter packages.
 flutter:
