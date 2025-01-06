@@ -5,4 +5,7 @@ class Constants {
 
   /// Parameter for the name in the API
   static const String apiNameParam = '?name=';
+
+  /// Size of different indicators
+  static const double indicatorSize = 70;
 }

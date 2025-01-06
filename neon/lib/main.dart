@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
       home: RepositoryProvider(
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           create: (context) => AgeEstimationBloc(
             repository: context.read<AgeEstimationRepository>(),
           ),
-          child: AgeEstimationPage(title: 'Schätze das Alter eines Namens'),
+          child: const AgeEstimationPage(),
         ),
       ),
     );
